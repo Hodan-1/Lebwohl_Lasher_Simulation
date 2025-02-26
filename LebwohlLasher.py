@@ -65,9 +65,12 @@ def plotdat(arr,pflag,nmax):
     """
     if pflag==0:
         return
-    u, v = np.cos(arr), np.sin(arr)
-    x, y = np.arange(nmax), np.arange(nmax)
-    cols = np.zeros_like((arr))
+    u = np.cos(arr)
+    v = np.sin(arr)
+    x = np.arange(nmax)
+    y = np.arange(nmax)
+    cols = np.zeros_like(arr)
+
     if pflag==1: # colour the arrows according to energy
         mpl.rc('image', cmap='rainbow')
 
