@@ -138,29 +138,30 @@ def savedat(arr,nsteps,Ts,runtime,ratio,energy,order,nmax):
         print("   {:05d}    {:6.4f} {:12.4f}  {:6.4f} ".format(i,ratio[i],energy[i],order[i]),file=FileOut)
     FileOut.close()
 #=======================================================================
-def all_energy(arr, nmax):
-    """
-    Vectorized energy calculation for the entire lattice.
-    """
-    # Roll the array to get neighbors (periodic boundary conditions)
+def one_energy
+Vectorized energy calculation for the entire lattice.           """                                                             # Roll the array to get neighbors (periodic boundary condit>    right = np.roll(arr, -1, axis=0)                                left = np.roll(arr, 1, axis=0)                                  up = np.roll(arr, -1, axis=1)                                   down = np.roll(arr, 1, axis=1)                                                                                                  ang1 = arr - right                                              ang2 = arr - left                                               ang3 = arr - up                                                 ang4 = arr - down                                                                                                               # Compute energy contributions from all four neighbors          energy = 0.5 * (1.0 - 3.0 * np.cos(arr - right)**2)             energy += 0.5 * (1.0 - 3.0 * np.cos(arr - left)**2)             energy += 0.5 * (1.0 - 3.0 * np.cos(arr - up)**2)               energy += 0.5 * (1.0 - 3.0 * np.cos(arr - down)**2)
+ """
+    # Roll the array to get neighbors (periodic boundary condit>
     right = np.roll(arr, -1, axis=0)
     left = np.roll(arr, 1, axis=0)
     up = np.roll(arr, -1, axis=1)
     down = np.roll(arr, 1, axis=1)
-	
-    ang1 = arr - right
-    ang2 = arr - left
-    ang3 = arr - up
-    ang4 = arr - down
+    ang1 = arr - right                                              ang2 = arr - left                                               ang3 = arr - up                                                 ang4 = arr - down
 
     # Compute energy contributions from all four neighbors
     energy = 0.5 * (1.0 - 3.0 * np.cos(arr - right)**2)
     energy += 0.5 * (1.0 - 3.0 * np.cos(arr - left)**2)
     energy += 0.5 * (1.0 - 3.0 * np.cos(arr - up)**2)
-    energy += 0.5 * (1.0 - 3.0 * np.cos(arr - down)**2)
+    energy += 0.5 * (1.0 - 3.0 * np.cos(arr - down)**2)                                                                    ang1 = arr - right                                              ang2 = arr - left                                               ang3 = arr - up                                                 ang4 = arr - down                                                                                                               # Compute energy contributions from all four neighbors          energy = 0.5 * (1.0 - 3.0 * np.cos(arr - right)**2)             energy += 0.5 * (1.0 - 3.0 * np.cos(arr - left)**2)             energy += 0.5 * (1.0 - 3.0 * np.cos(arr - up)**2)               energy += 0.5 * (1.0 - 3.0 * np.cos(arr - down)**2)    
+
+def all_energy(arr, nmax):
+    """
+    Vectorized energy calculation for the entire lattice.
+    """
+	
     
     # Sum the energy over the entire lattice
-    return np.sum(energy)
+    return np.sum(one_energy)
 
 #==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>
 
