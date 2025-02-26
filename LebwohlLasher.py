@@ -149,6 +149,12 @@ def all_energy(arr, nmax):
     left = np.roll(arr, 1, axis=0)
     up = np.roll(arr, -1, axis=1)
     down = np.roll(arr, 1, axis=1)
+    
+    ang1 = arr - right
+    ang2 = arr - left
+    ang3 = arr - up
+    ang4 = arr - down
+ 
     energy = 0.5 * (1.0 - 3.0 * np.cos(arr - right)**2)
     energy += 0.5 * (1.0 - 3.0 * np.cos(arr - left)**2)
     energy += 0.5 * (1.0 - 3.0 * np.cos(arr - up)**2)
