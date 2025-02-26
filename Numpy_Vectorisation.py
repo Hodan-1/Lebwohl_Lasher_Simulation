@@ -46,7 +46,7 @@ def initdat(nmax):
 #=======================================================================
 def plotdat(arr,pflag,nmax):
     """
-    Arguments:
+    Args:
 	  arr (float(nmax,nmax)) = array that contains lattice data;
 	  pflag (int) = parameter to control plotting;
       nmax (int) = side length of square lattice.
@@ -107,7 +107,7 @@ def plotdat(arr,pflag,nmax):
 #=======================================================================
 def savedat(arr,nsteps,Ts,runtime,ratio,energy,order,nmax):
     """
-    Arguments:
+    Args:
 	  arr (float(nmax,nmax)) = array that contains lattice data;
 	  nsteps (int) = number of Monte Carlo steps (MCS) performed;
 	  Ts (float) = reduced temperature (range 0 to 2);
@@ -145,6 +145,16 @@ def savedat(arr,nsteps,Ts,runtime,ratio,energy,order,nmax):
 #=======================================================================
 # Replace the original functions with the vectorized versions
 def all_energy(arr, nmax):
+       """
+    Compute the energy of the entire lattice using np.roll.
+
+    Args:
+    - arr (numpy.ndarray): The lattice data.
+    - nmax (int): The size of the lattice (nmax x nmax).
+
+    Returns:
+    - en (float): The total energy of the lattice.
+    """
     right = np.roll(arr, -1, axis=0)
     left = np.roll(arr, 1, axis=0)
     up = np.roll(arr, -1, axis=1)
@@ -162,6 +172,18 @@ def all_energy(arr, nmax):
     return np.sum(energy)
 
 def MC_step(arr, Ts, nmax):
+    """
+    Perform one Monte Carlo step using vectorised operations.
+
+    Args:
+    - arr (numpy.ndarray): The lattice data.
+    - Ts (float): The reduced temperature.
+    - nmax (int): The size of the lattice (nmax x nmax).
+
+    Returns:
+    - accept (float): The acceptance ratio for this step.
+    """
+	
     accept = 0
     scale = 0.1 + Ts
     xran = np.random.randint(0, high=nmax, size=(nmax, nmax))
@@ -200,6 +222,16 @@ def MC_step(arr, Ts, nmax):
 
 
 def get_order(arr, nmax):
+    """
+    Compute the order parameter using the Q tensor approach.
+
+    Args:
+    - arr (numpy.ndarray): The lattice data.
+    - nmax (int): The size of the lattice (nmax x nmax).
+
+    Returns:
+    - order (float): The order parameter of the lattice.
+    """
     lab = np.vstack((np.cos(arr), np.sin(arr), np.zeros_like(arr))).reshape(3, nmax, nmax)
     Qab = np.zeros((3, 3))
     delta = np.eye(3, 3)
@@ -212,7 +244,7 @@ def get_order(arr, nmax):
 #=======================================================================
 def main(program, nsteps, nmax, temp, pflag):
     """
-    Arguments:
+    Args:
 	  program (string) = the name of the program;
 	  nsteps (int) = number of Monte Carlo steps (MCS) to perform;
       nmax (int) = side length of square lattice to simulate;
