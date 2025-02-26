@@ -35,7 +35,14 @@ def initdat(nmax):
     """
     Initialize the lattice with random angles between 0 and 2π.
     Each process initializes its own sub-lattice.
+    
+   Args:
+    - nmax (int): The size of the lattice (nmax x nmax).
+
+    Returns:
+    - arr (ndarray): A 2D array representing the initialised sub-lattice.
     """
+
     sub_nmax = decompose_lattice(nmax, size)
     return np.random.uniform(0, 2 * np.pi, (sub_nmax, nmax))
 
@@ -43,6 +50,10 @@ def initdat(nmax):
 def exchange_boundaries(arr, nmax):
     """
     Exchange boundary rows with non-blocking MPI communication.
+    
+Args:
+    - arr (ndarray): The sub-lattice array for which boundaries need to be exchanged.
+    - nmax (int): The size of the lattice (nmax x nmax).
     """
     sub_nmax = arr.shape[0]
     reqs = []
@@ -64,6 +75,12 @@ def exchange_boundaries(arr, nmax):
 def all_energy(arr, nmax):
     """
     Compute total energy efficiently using vectorized operations.
+ Args:
+    - arr (ndarray): The sub-lattice array.
+    - nmax (int): The size of the lattice (nmax x nmax).
+
+    Returns:
+    - total_energy (float): The total energy of the lattice.
     """
     neighbors = (
         np.roll(arr, shift=1, axis=0) + np.roll(arr, shift=-1, axis=0) +
