@@ -74,9 +74,22 @@ def plotdat(arr,pflag,nmax):
     if pflag==1: # colour the arrows according to energy
         mpl.rc('image', cmap='rainbow')
 
+	# Compute energy for all cells using np.roll
+        right = np.roll(arr, -1, axis=0)
+        left = np.roll(arr, 1, axis=0)
+        up = np.roll(arr, -1, axis=1)
+        down = np.roll(arr, 1, axis=1)
 
-        cols = all_energy(arr,i,j,nmax)
-        norm = plt.Normalize(cols.min(), cols.max())
+        ang1 = arr - right
+        ang2 = arr - left
+        ang3 = arr - up
+        ang4 = arr - down
+
+        cols = 0.5 * (1.0 - 3.0 * np.cos(ang1)**2) + \
+               0.5 * (1.0 - 3.0 * np.cos(ang2)**2) + \
+               0.5 * (1.0 - 3.0 * np.cos(ang3)**2) + \
+               0.5 * (1.0 - 3.0 * np.cos(ang4)**2)
+
     elif pflag==2: # colour the arrows according to angle
         mpl.rc('image', cmap='hsv')
         cols = arr%np.pi
