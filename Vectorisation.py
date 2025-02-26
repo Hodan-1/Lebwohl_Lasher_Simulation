@@ -5,19 +5,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 
-# Set a seed for reproducibility in random number generation
 np.random.seed(42)
 
 #=======================================================================
 def initdat(nmax):
     """
-    Initialise the lattice with random orientations in the range [0, 2π].
-
-    Args:
-    - nmax (int): The size of the lattice (nmax x nmax).
-
-    Returns:
-    - arr (numpy.ndarray): A 2D array representing the lattice with random orientations.
+    Initialize the lattice with random orientations in the range [0, 2π].
     """
     return np.random.random_sample((nmax, nmax)) * 2.0 * np.pi
 
@@ -25,20 +18,10 @@ def initdat(nmax):
 def plotdat(arr, pflag, nmax):
     """
     Plot the lattice data using quiver plots.
-
-    Args:
-    - arr (numpy.ndarray): The lattice data to be plotted.
-    - pflag (int): A flag to determine the type of plot:
-        - 0: No plot.
-        - 1: Colour the arrows according to energy.
-        - 2: Colour the arrows according to angle.
-        - Other: Black plot.
-    - nmax (int): The size of the lattice (nmax x nmax).
     """
     if pflag == 0:
         return
 
-    # Compute the x and y components of the arrows
     u = np.cos(arr)
     v = np.sin(arr)
     x = np.arange(nmax)
@@ -83,16 +66,6 @@ def plotdat(arr, pflag, nmax):
 def savedat(arr, nsteps, Ts, runtime, ratio, energy, order, nmax):
     """
     Save simulation data to a file.
-
-    Args:
-    - arr (numpy.ndarray): The lattice data.
-    - nsteps (int): The number of Monte Carlo steps.
-    - Ts (float): The reduced temperature.
-    - runtime (float): The total runtime of the simulation.
-    - ratio (numpy.ndarray): The acceptance ratio at each step.
-    - energy (numpy.ndarray): The energy of the lattice at each step.
-    - order (numpy.ndarray): The order parameter at each step.
-    - nmax (int): The size of the lattice (nmax x nmax).
     """
     current_datetime = datetime.datetime.now().strftime("%a-%d-%b-%Y-at-%I-%M-%S%p")
     filename = f"LL-Output-{current_datetime}.txt"
@@ -113,13 +86,6 @@ def savedat(arr, nsteps, Ts, runtime, ratio, energy, order, nmax):
 def all_energy(arr, nmax):
     """
     Compute the energy of the entire lattice using np.roll.
-
-    Args:
-    - arr (numpy.ndarray): The lattice data.
-    - nmax (int): The size of the lattice (nmax x nmax).
-
-    Returns:
-    - en (float): The total energy of the lattice.
     """
     right = np.roll(arr, -1, axis=0)
     left = np.roll(arr, 1, axis=0)
@@ -141,15 +107,7 @@ def all_energy(arr, nmax):
 #=======================================================================
 def MC_step(arr, Ts, nmax):
     """
-    Perform one Monte Carlo step using vectorised operations.
-
-    Args:
-    - arr (numpy.ndarray): The lattice data.
-    - Ts (float): The reduced temperature.
-    - nmax (int): The size of the lattice (nmax x nmax).
-
-    Returns:
-    - accept (float): The acceptance ratio for this step.
+    Perform one Monte Carlo step using vectorized operations.
     """
     scale = 0.1 + Ts
     accept = 0
@@ -159,7 +117,7 @@ def MC_step(arr, Ts, nmax):
     yran = np.random.randint(0, high=nmax, size=(nmax, nmax))
     aran = np.random.normal(scale=scale, size=(nmax, nmax))
 
-    # Use np.roll to get the neighbours with periodic boundary conditions
+    # Use np.roll to get the neighbors with periodic boundary conditions
     right = np.roll(arr, -1, axis=0)
     left = np.roll(arr, 1, axis=0)
     up = np.roll(arr, -1, axis=1)
@@ -194,13 +152,6 @@ def MC_step(arr, Ts, nmax):
 def get_order(arr, nmax):
     """
     Compute the order parameter using the Q tensor approach.
-
-    Args:
-    - arr (numpy.ndarray): The lattice data.
-    - nmax (int): The size of the lattice (nmax x nmax).
-
-    Returns:
-    - order (float): The order parameter of the lattice.
     """
     lab = np.vstack((np.cos(arr), np.sin(arr), np.zeros_like(arr))).reshape(3, nmax, nmax)
     Qab = np.zeros((3, 3))
@@ -209,20 +160,13 @@ def get_order(arr, nmax):
         for b in range(3):
             Qab[a, b] = np.sum(3 * lab[a] * lab[b] - delta[a, b])
     Qab = Qab / (2 * nmax * nmax)
-    eigenvalues = np.linalg.eigvalsh(Qab)
+    eigenvalues = np.linalg.eigvals(Qab)
     return np.max(eigenvalues)
 
 #=======================================================================
 def main(program, nsteps, nmax, temp, pflag):
     """
     Main function to run the simulation.
-
-    Args:
-    - program (str): The name of the program.
-    - nsteps (int): The number of Monte Carlo steps.
-    - nmax (int): The size of the lattice (nmax x nmax).
-    - temp (float): The reduced temperature.
-    - pflag (int): The plot flag to determine the type of plot.
     """
     lattice = initdat(nmax)
     plotdat(lattice, pflag, nmax)
