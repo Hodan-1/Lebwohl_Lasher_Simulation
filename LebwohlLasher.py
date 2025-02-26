@@ -167,20 +167,37 @@ def MC_step(arr, Ts, nmax):
     xran = np.random.randint(0, high=nmax, size=(nmax, nmax))
     yran = np.random.randint(0, high=nmax, size=(nmax, nmax))
     aran = np.random.normal(scale=scale, size=(nmax, nmax))
-    en0 = one_energy(arr, nmax)
-    arr[xran, yran] += aran
-    en1 = one_energy(arr, nmax)
 
-    if en1 <= en0:
-        accept += 1
-    else:
-        boltz = np.exp(-(en1 - en0) / Ts)
-        if boltz >= np.random.uniform(0.0, 1.0):
-            accept += 1
-        else:
-            arr[xran, yran] -= aran
+    right = np.roll(arr, -1, axis=0)
+    left = np.roll(arr, 1, axis=0)
+    up = np.roll(arr, -1, axis=1)
+    down = np.roll(arr, 1, axis=1)
+
+    # Compute the energy before the change
+    en0 = 0.5 * (1.0 - 3.0 * np.cos(arr - right)**2) + \
+          0.5 * (1.0 - 3.0 * np.cos(arr - left)**2) + \
+          0.5 * (1.0 - 3.0 * np.cos(arr - up)**2) + \
+          0.5 * (1.0 - 3.0 * np.cos(arr - down)**2)
+
+    # Make the change
+    arr[xran, yran] += aran
+
+    # Compute the energy after the change
+    en1 = 0.5 * (1.0 - 3.0 * np.cos(arr - right)**2) + \
+          0.5 * (1.0 - 3.0 * np.cos(arr - left)**2) + \
+          0.5 * (1.0 - 3.0 * np.cos(arr - up)**2) + \
+          0.5 * (1.0 - 3.0 * np.cos(arr - down)**2)
+
+    # Compute the Boltzmann factor
+    boltz = np.exp(-(en1 - en0) / Ts)
+
+    # Accept or reject the change
+    accept_mask = (en1 <= en0) | (boltz >= np.random.uniform(0.0, 1.0, size=(nmax, nmax)))
+    arr[~accept_mask] -= aran[~accept_mask]
+    accept = np.sum(accept_mask)
 
     return accept / (nmax * nmax)
+
 
 def get_order(arr, nmax):
     lab = np.vstack((np.cos(arr), np.sin(arr), np.zeros_like(arr))).reshape(3, nmax, nmax)
