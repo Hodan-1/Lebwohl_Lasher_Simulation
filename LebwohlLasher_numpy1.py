@@ -153,7 +153,7 @@ Vectorized energy calculation for the entire lattice.           """             
     energy += 0.5 * (1.0 - 3.0 * np.cos(arr - left)**2)
     energy += 0.5 * (1.0 - 3.0 * np.cos(arr - up)**2)
     energy += 0.5 * (1.0 - 3.0 * np.cos(arr - down)**2)                                                                    ang1 = arr - right                                              ang2 = arr - left                                               ang3 = arr - up                                                 ang4 = arr - down                                                                                                               # Compute energy contributions from all four neighbors          energy = 0.5 * (1.0 - 3.0 * np.cos(arr - right)**2)             energy += 0.5 * (1.0 - 3.0 * np.cos(arr - left)**2)             energy += 0.5 * (1.0 - 3.0 * np.cos(arr - up)**2)               energy += 0.5 * (1.0 - 3.0 * np.cos(arr - down)**2)    
-
+   return energy
 def all_energy(arr, nmax):
     """
     Vectorized energy calculation for the entire lattice.
