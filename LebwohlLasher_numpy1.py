@@ -158,25 +158,28 @@ def all_energy(arr, nmax):
     
     # Sum the energy over the entire lattice
     return np.sum(energy)
-#=======================================================================
+
+#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>
+
 def get_order(arr, nmax):
     """
-    Vectorized order parameter calculation using Q tensor.
+    Compute the order parameter using the Q tensor approach.
+
+    Args:
+    - arr (numpy.ndarray): The lattice data.
+    - nmax (int): The size of the lattice (nmax x nmax).
+
+    Returns:
+    - order (float): The order parameter of the lattice.
     """
-    # Compute the 3D unit vectors for all lattice sites
-    cos_arr = np.cos(arr)
-    sin_arr = np.sin(arr)
-    zeros_arr = np.zeros_like(arr)
-    
-    # Stack to form a (3, nmax, nmax) array
-    lab = np.vstack((np.cos(arr), np.sin(arr), np.zeros_like(arr))).reshape(3, nmax, nmax)    
-    # Compute the Q tensor using Einstein summation
-    delta = np.eye(3)
-    Qab = np.einsum('aij,bij->ab', lab, lab) * 3 / (2 * nmax * nmax)
-    Qab -= np.sum(delta) / (2 * nmax * nmax)
-    
-    # Compute the eigenvalues and return the maximum
-    eigenvalues = np.linalg.eigvals(Qab)
+    lab = np.vstack((np.cos(arr), np.sin(arr), np.zeros_like(arr))).reshape(3, nmax, nmax)
+    Qab = np.zeros((3, 3))
+    delta = np.eye(3, 3)
+    for a in range(3):
+        for b in range(3):
+            Qab[a, b] = np.sum(3 * lab[a] * lab[b] - delta[a, b])
+    Qab = Qab / (2 * nmax * nmax)
+    eigenvalues = np.linalg.eigvalsh(Qab)
     return np.max(eigenvalues)
 #=======================================================================
 def MC_step(arr, Ts, nmax):
