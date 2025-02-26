@@ -43,61 +43,64 @@ def initdat(nmax):
     arr = np.random.random_sample((nmax,nmax))*2.0*np.pi
     return arr
 #=======================================================================
-def plotdat(arr,pflag,nmax):
+def plotdat(arr, pflag, nmax):
     """
-    Arguments:
-	  arr (float(nmax,nmax)) = array that contains lattice data;
-	  pflag (int) = parameter to control plotting;
-      nmax (int) = side length of square lattice.
-    Description:
-      Function to make a pretty plot of the data array.  Makes use of the
-      quiver plot style in matplotlib.  Use pflag to control style:
-        pflag = 0 for no plot (for scripted operation);
-        pflag = 1 for energy plot;
-        pflag = 2 for angles plot;
-        pflag = 3 for black plot.
-	  The angles plot uses a cyclic color map representing the range from
-	  0 to pi.  The energy plot is normalised to the energy range of the
-	  current frame.
-	Returns:
-      NULL
-    """
-    if pflag==0:
-        return
-    u = np.cos(arr)
-"""
-    Initialise the lattice with random orientations in the range [0, 2π].
+    Plot the lattice data using quiver plots.
 
-    Parameters:
+    Args:
+    - arr (numpy.ndarray): The lattice data to be plotted.
+    - pflag (int): A flag to determine the type of plot:
+        - 0: No plot.
+        - 1: Colour the arrows according to energy.
+        - 2: Colour the arrows according to angle.
+        - Other: Black plot.
     - nmax (int): The size of the lattice (nmax x nmax).
+    """
+    if pflag == 0:
+        return
 
-    Returns:
-    - arr (numpy.ndarray): A 2D array representing the lattice with random orientations.
-    """    v = np.sin(arr)
+    # Compute the x and y components of the arrows
+    u = np.cos(arr)
+    v = np.sin(arr)
     x = np.arange(nmax)
     y = np.arange(nmax)
-    cols = np.zeros((nmax,nmax))
-    if pflag==1: # colour the arrows according to energy
+    cols = np.zeros_like(arr)
+
+    if pflag == 1:  # Colour the arrows according to energy
         mpl.rc('image', cmap='rainbow')
-        for i in range(nmax):
-            for j in range(nmax):
-                cols[i,j] = one_energy(arr,i,j,nmax)
+        # Compute energy for all cells using np.roll
+        right = np.roll(arr, -1, axis=0)
+        left = np.roll(arr, 1, axis=0)
+        up = np.roll(arr, -1, axis=1)
+        down = np.roll(arr, 1, axis=1)
+
+        ang1 = arr - right
+        ang2 = arr - left
+        ang3 = arr - up
+        ang4 = arr - down
+
+        cols = 0.5 * (1.0 - 3.0 * np.cos(ang1)**2) + \
+               0.5 * (1.0 - 3.0 * np.cos(ang2)**2) + \
+               0.5 * (1.0 - 3.0 * np.cos(ang3)**2) + \
+               0.5 * (1.0 - 3.0 * np.cos(ang4)**2)
+
         norm = plt.Normalize(cols.min(), cols.max())
-    elif pflag==2: # colour the arrows according to angle
+    elif pflag == 2:  # Colour the arrows according to angle
         mpl.rc('image', cmap='hsv')
-        cols = arr%np.pi
+        cols = arr % np.pi
         norm = plt.Normalize(vmin=0, vmax=np.pi)
-    else:
+    else:  # Black plot
         mpl.rc('image', cmap='gist_gray')
         cols = np.zeros_like(arr)
         norm = plt.Normalize(vmin=0, vmax=1)
 
-    quiveropts = dict(headlength=0,pivot='middle',headwidth=1,scale=1.1*nmax)
+    quiveropts = dict(headlength=0, pivot='middle', headwidth=1, scale=1.1 * nmax)
     fig, ax = plt.subplots()
-    q = ax.quiver(x, y, u, v, cols,norm=norm, **quiveropts)
+    q = ax.quiver(x, y, u, v, cols, norm=norm, **quiveropts)
     ax.set_aspect('equal')
     plt.show()
-#=======================================================================
+
+#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>#==============================================================>
 def savedat(arr,nsteps,Ts,runtime,ratio,energy,order,nmax):
     """
     Arguments:
