@@ -34,17 +34,15 @@ np.random.seed(42)
 #=======================================================================
 def initdat(nmax):
     """
-    Arguments:
-      nmax (int) = size of lattice to create (nmax,nmax).
-    Description:
-      Function to create and initialise the main data array that holds
-      the lattice.  Will return a square lattice (size nmax x nmax)
-	  initialised with random orientations in the range [0,2pi].
-	Returns:
-	  arr (float(nmax,nmax)) = array to hold lattice.
+    Initialise the lattice with random orientations in the range [0, 2π].
+
+    Parameters:
+    - nmax (int): The size of the lattice (nmax x nmax).
+
+    Returns:
+    - arr (numpy.ndarray): A 2D array representing the lattice with random orientations.
     """
-    arr = np.random.random_sample((nmax,nmax))*2.0*np.pi
-    return arr
+    return np.random.random_sample((nmax, nmax)) * 2.0 * np.pi
 #=======================================================================
 def plotdat(arr,pflag,nmax):
     """
