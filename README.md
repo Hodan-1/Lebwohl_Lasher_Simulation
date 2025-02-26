@@ -29,7 +29,7 @@ Code Structure
     - `parallel_setup.py`: Setup file to compile the parallel Cython code.
     - `LebwohlLasher_parallel_cython.py`: Python script to run the parallel Cython implementation.
 
-- **MPI Implementation**:
+- MPI Implementation:
   - `MPI_Checkboard.py`: Run locally with:
     `mpiexec -n <num_processes> python MPI_Checkboard.py <iterations> <size> <temperature> <plotflag>`
   - On Blue Crystal (using SLURM):
@@ -52,7 +52,7 @@ Requires
 - MPI (e.g., OpenMPI or MPICH)
 - SLURM (for Blue Crystal)
 
-Compiling Cython Code**
+Compiling Cython Code
 1. Navigate to the directory containing the Cython files.
 2. Compile the serial Cython code:
    ` python cython_setup.py build_ext --inplace
