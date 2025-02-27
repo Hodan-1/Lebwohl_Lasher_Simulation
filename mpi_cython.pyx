@@ -13,45 +13,36 @@ cpdef inline double one_energy(double[:, :] arr, int ix, int iy, int sub_nmax, i
     cdef int i
     cdef int dx[4], dy[4]
     cdef double en = 0.0, ang
-    cdef int new_ix, new_iy
-    
 
     dx[0], dy[0] = 1, 0
     dx[1], dy[1] = -1, 0
     dx[2], dy[2] = 0, 1
     dx[3], dy[3] = 0, -1
 
-    for i in range(4): 
-        # Handle periodic boundaries manually
-        new_ix = (ix + dx[i]) % sub_nmax
-        new_iy = (iy + dy[i]) % nmax
+    # Use np.roll for periodic boundary conditions
+    neighbors = (
+        np.roll(arr, shift=1, axis=0) + np.roll(arr, shift=-1, axis=0) +
+        np.roll(arr, shift=1, axis=1) + np.roll(arr, shift=-1, axis=1)
+    )
+    ang = arr[ix, iy] - neighbors[ix, iy]
 
-        # Ensure indices are non-negative
-        if new_ix < 0:
-            new_ix += sub_nmax
-        if new_iy < 0:
-            new_iy += nmax
-
-        ang = arr[ix, iy] - arr[new_ix, new_iy]
-        en += 0.5 * (1.0 - 3.0 * cos(ang) ** 2)
+    return 0.5 * (1.0 - 3.0 * np.cos(ang) ** 2)
     
-    return en
-
 ########################################
 # Calculate the energy of the lattice  #
 ########################################
 def all_energy(np.ndarray[DTYPE_t, ndim=2] arr, int sub_nmax, int nmax):
-    cdef double enall = 0.0
-    cdef int i, j
-    cdef double[:, :] arr_view = arr
-# Debug: Print array shape
-    print(f"Calculating energy: arr.shape = {arr.shape[0]}x{arr.shape[1]}, nmax = {nmax}")
-    
-    for i in prange(nmax, nogil=True):
-        for j in range(nmax):
-            enall += one_energy(arr_view, i, j, sub_nmax, nmax)
-    
-    return enall
+
+   """
+    Compute the total energy of the lattice using vectorised operations.
+    """
+
+neighbors = (
+        np.roll(arr, shift=1, axis=0) + np.roll(arr, shift=-1, axis=0) +
+        np.roll(arr, shift=1, axis=1) + np.roll(arr, shift=-1, axis=1)
+    )
+    energy = 0.5 * (1.0 - 3.0 * np.cos(arr - neighbors) ** 2)
+    return np.sum(energy)
 
 ########################################
 # Calculate the order parameter        #
@@ -76,9 +67,6 @@ def MC_step(np.ndarray[DTYPE_t, ndim=2] arr, float Ts, int nmax):
     cdef double scale = 0.1 + Ts
     cdef int accept = 0, i, j, ix, iy
     cdef double ang, en0, en1
-    cdef double[:, :] arr_view = arr
-    
-    xran = np.random.randint(0, arr.shape[0], size=(arr.shape[0], arr.shape[1]), dtype=np.int32)
     yran = np.random.randint(0, nmax, size=(arr.shape[0], arr.shape[1]), dtype=np.int32)
     aran = np.random.normal(scale=scale, size=(arr.shape[0], arr.shape[1]))
     urn = np.random.rand(arr.shape[0], arr.shape[1])
