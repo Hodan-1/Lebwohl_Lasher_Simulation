@@ -3,6 +3,6 @@ from Cython.Build import cythonize
 import numpy as np
 
 setup(
-    ext_modules=cythonize("monte_carlo.pyx"),
+    ext_modules=cythonize("mpi_cython.pyx"),
     include_dirs=[np.get_include()]
 )
