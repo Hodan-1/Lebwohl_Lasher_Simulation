@@ -32,6 +32,10 @@ Code Structure
 - MPI Implementation:
   - `MPI_Checkboard.py`: Run locally with:
     `mpiexec -n <num_processes> python MPI_Checkboard.py <iterations> <size> <temperature> <plotflag>`
+  - On MPI vs Cython:
+  -     compile with mpi_cython_setup.py. The pyx file is already present in file. To compile use: ` python mpi_cython_setup.py build_ext --inplace
+      then Run locally with:
+          `mpiexec -n <num_processes> python MPI_Cython.py <iterations> <size> <temperature> <plotflag>`
   - On Blue Crystal (using SLURM):
     - `slurm.sh`: SLURM submission script. Ensure `#SBATCH --ntasks-per-node=<num_processes>` matches the number of processes.
     - Change to the submission directory : 
