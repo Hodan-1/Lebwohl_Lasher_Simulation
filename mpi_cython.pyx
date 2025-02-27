@@ -13,6 +13,8 @@ cpdef inline double one_energy(double[:, :] arr, int ix, int iy, int sub_nmax, i
     cdef int i
     cdef int dx[4], dy[4]
     cdef double en = 0.0, ang
+    cdef int new_ix, new_iy
+    
 
     dx[0], dy[0] = 1, 0
     dx[1], dy[1] = -1, 0
@@ -20,7 +22,17 @@ cpdef inline double one_energy(double[:, :] arr, int ix, int iy, int sub_nmax, i
     dx[3], dy[3] = 0, -1
 
     for i in range(4): 
-        ang = arr[ix, iy] - arr[(ix + dx[i]) % sub_max, (iy + dy[i]) % nmax]
+        # Handle periodic boundaries manually
+        new_ix = (ix + dx[i]) % sub_nmax
+        new_iy = (iy + dy[i]) % nmax
+
+        # Ensure indices are non-negative
+        if new_ix < 0:
+            new_ix += sub_nmax
+        if new_iy < 0:
+            new_iy += nmax
+
+        ang = arr[ix, iy] - arr[new_ix, new_iy]
         en += 0.5 * (1.0 - 3.0 * cos(ang) ** 2)
     
     return en
@@ -28,7 +40,7 @@ cpdef inline double one_energy(double[:, :] arr, int ix, int iy, int sub_nmax, i
 ########################################
 # Calculate the energy of the lattice  #
 ########################################
-cpdef all_energy(np.ndarray[DTYPE_t, ndim=2] arr, int sub_nmax int nmax):
+def all_energy(np.ndarray[DTYPE_t, ndim=2] arr, int sub_nmax, int nmax):
     cdef double enall = 0.0
     cdef int i, j
     cdef double[:, :] arr_view = arr
@@ -37,7 +49,7 @@ cpdef all_energy(np.ndarray[DTYPE_t, ndim=2] arr, int sub_nmax int nmax):
     
     for i in prange(nmax, nogil=True):
         for j in range(nmax):
-            enall += one_energy(arr_view, i, j, nmax)
+            enall += one_energy(arr_view, i, j, sub_nmax, nmax)
     
     return enall
 
