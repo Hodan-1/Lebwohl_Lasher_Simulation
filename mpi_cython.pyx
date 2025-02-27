@@ -86,4 +86,3 @@ def MC_step(np.ndarray[DTYPE_t, ndim=2] arr, float Ts, int nmax):
                 arr_view[ix, iy] -= ang
     
     return accept / (nmax * nmax)
-
