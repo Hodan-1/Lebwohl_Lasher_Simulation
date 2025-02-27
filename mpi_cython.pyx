@@ -28,10 +28,12 @@ cpdef inline double one_energy(double[:, :] arr, int ix, int iy, int nmax) nogil
 ########################################
 # Calculate the energy of the lattice  #
 ########################################
-def all_energy(np.ndarray[DTYPE_t, ndim=2] arr, int nmax):
+cpdef all_energy(np.ndarray[DTYPE_t, ndim=2] arr, int nmax):
     cdef double enall = 0.0
     cdef int i, j
     cdef double[:, :] arr_view = arr
+# Debug: Print array shape
+    print(f"Calculating energy: arr.shape = {arr.shape[0]}x{arr.shape[1]}, nmax = {nmax}")
     
     for i in prange(nmax, nogil=True):
         for j in range(nmax):
@@ -42,7 +44,7 @@ def all_energy(np.ndarray[DTYPE_t, ndim=2] arr, int nmax):
 ########################################
 # Calculate the order parameter        #
 ########################################
-def get_order(np.ndarray[DTYPE_t, ndim=2] arr, int nmax):
+cpdef get_order(np.ndarray[DTYPE_t, ndim=2] arr, int nmax):
     cdef double N2 = nmax * nmax
     cdef np.ndarray[DTYPE_t, ndim=2] cos_arr = np.cos(arr)
     cdef np.ndarray[DTYPE_t, ndim=2] sin_arr = np.sin(arr)
@@ -58,7 +60,7 @@ def get_order(np.ndarray[DTYPE_t, ndim=2] arr, int nmax):
 ########################################
 # Perform one Monte Carlo step         #
 ########################################
-def MC_step(np.ndarray[DTYPE_t, ndim=2] arr, float Ts, int nmax):
+cpdef MC_step(np.ndarray[DTYPE_t, ndim=2] arr, float Ts, int nmax):
     cdef double scale = 0.1 + Ts
     cdef int accept = 0, i, j, ix, iy
     cdef double ang, en0, en1, boltz
